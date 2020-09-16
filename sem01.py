@@ -56,4 +56,4 @@ def prime_number(n: int):
         return "Простое число"
 
 
-print(fibonacci(8))
+print(prime_number(139))
