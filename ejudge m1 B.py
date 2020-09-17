@@ -1,64 +1,54 @@
 import re
 import fileinput
 
+
 class Stack:
     def __init__(self, size: int):
-        self.stack = [None for i in range(size)]
-        self.tail = 0
+        self.__stack = [None for i in range(size)]
+        self.__tail = 0
 
-    def push(self, data: str):
-        if self.tail == len(self.stack):
+    def push(self, data: str) -> None:
+        if self.__tail == len(self.__stack):
             print('overflow')
-        self.stack[self.tail] = data
-        self.tail += 1
+            return
+        self.__stack[self.__tail] = data
+        self.__tail += 1
 
     def pop(self) -> str:
-        if self.tail == 0:
-            print('overflow')
-        self.tail -= 1
-        buf = self.stack[self.tail]
-        self.stack[self.tail] = None
+        if self.__tail == 0:
+            return 'underflow'
+        self.__tail -= 1
+        buf = self.__stack[self.__tail]
+        self.__stack[self.__tail] = None
         return buf
 
     def print(self):
-        if self.tail == 0:
-            return 'empty'
-        return self.stack[:self.tail]
+        if self.__tail == 0:
+            print('empty')
+            return
+        print(*self.__stack[:self.__tail])
 
 
-for i in fileinput.input():
+def parse_cmd(cmd):
+    A = None
+    for line in cmd.input():
+        if line == '\n':
+            continue
+        elif re.search('set_size \d+', line) is not None and len(line.split()) == 2 and A is None:
+            A = Stack(int(re.search('set_size \d+', line).group(0)[9:]))
+        elif A is not None:
+            if len(re.findall('[^print]', line)) > 1 and len(re.findall('[^pop]', line)) > 1 and len(
+                    re.findall('^push [^ ]{2,}', line)) != 1:
+                print('error')
+            elif line[:4] == 'push':
+                A.push(line[5:-1])
+            elif line[0:3] == 'pop':
+                print(A.pop())
+            elif line[0:5] == 'print':
+                A.print()
+        else:
+            print('error')
 
 
-'''
-stack_flag = False
-tail = 0
-while True:
-    command = input().split()
-
-    if command[0] == 'set_size' and command[1].isdecimal():
-        stack = [None for i in range(int(command[1]))]
-        tail = 0
-        stack_flag = True
-    if stack_flag:
-        if command[0] == 'push':
-            if tail == len(stack):
-                print('overflow')
-                continue
-            stack[tail] = command[1]
-            tail += 1
-        if command[0] == 'pop':
-            if tail == 0:
-                print('overflow')
-                continue
-            tail -= 1
-            print(stack[tail])
-            stack[tail] = None
-        if command[0] == 'print':
-            print(*stack[:tail])
-    if command=='':
-        break
-    else:
-        print('overflow')
-        continue
-
-'''
+cmd = fileinput
+parse_cmd(cmd)
