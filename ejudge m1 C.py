@@ -1,5 +1,5 @@
 import re
-import fileinput
+from sys import argv
 
 
 class Queue:
@@ -8,10 +8,9 @@ class Queue:
         self.__tail = 0
         self.__head = 0
 
-    def push(self, data: str) -> None:
+    def push(self, data: str):
         if self.__tail == self.__head and self.__queue[self.__head] is not None:
-            print('overflow')
-            return
+            return 'overflow'
         self.__queue[self.__tail] = data
         self.__tail = (self.__tail + 1) % len(self.__queue)
 
@@ -25,20 +24,24 @@ class Queue:
 
     def print(self):
         if self.__queue[self.__head] is None:
-            print('empty')
-            return
+            return 'empty'
         if self.__head < self.__tail:
-            print(*self.__queue[self.__head:self.__tail])
+            return self.__queue[self.__head:self.__tail]
         else:
-            print(*(self.__queue[self.__head:len(self.__queue)] + self.__queue[0:self.__tail]))
+            return self.__queue[self.__head:len(self.__queue)] + self.__queue[0:self.__tail]
 
 
 def output_print(output_file, msg):
-    with open(output_file, 'r') as output_file:
-        output_file.write(msg)
+    if msg is None:
+        return
+    with open(output_file, 'a') as output_file:
+        if isinstance(msg, list):
+            output_file.write(' '.join(msg) + '\n')
+        else:
+            output_file.write(msg + '\n')
 
 
-def parse_cmd(input_file, output_file):
+def parse_file(input_file, output_file):
     A = None
     with open(input_file, 'r') as input_file:
         for line in input_file:
@@ -51,15 +54,14 @@ def parse_cmd(input_file, output_file):
                         re.findall('^push [^ ]{2,}', line)) != 1:
                     output_print(output_file, 'error')
                 elif line[:4] == 'push':
-                    A.push(line[5:-1])
+                    output_print(output_file, A.push(line[5:-1]))
                 elif line[0:3] == 'pop':
-                    output_print(output_file,A.pop())
+                    output_print(output_file, A.pop())
                 elif line[0:5] == 'print':
-                    A.print()
+                    output_print(output_file, A.print())
             else:
-                output_print(output_file,'error')
+                output_print(output_file, 'error')
 
 
-cmd = fileinput
-
-parse_cmd(cmd)
+input_file, out_file = argv[1:]
+parse_file(input_file, out_file)
