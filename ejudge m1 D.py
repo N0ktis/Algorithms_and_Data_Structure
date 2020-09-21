@@ -1,4 +1,3 @@
-import re
 import fileinput
 import sys
 
@@ -6,41 +5,61 @@ sys.setrecursionlimit(10000)
 
 
 class Graph:
-    def __init__(self, type: str, node: str, bypass_type: str):
+    def __init__(self, type: str, vertex: str, bypass_type: str):
         self.__graph = dict()
         self.__type = type
-        self.__node = node
+        self.vertex = vertex
         self.bypass_type = bypass_type
 
-    def add_edge(self, start: str, end, ):
+    def add_edge(self, start: str, end, ) -> None:
         self.__graph.setdefault(start, []).append(end)
+        self.__graph[start].sort()
         if self.__type == 'u':
             self.__graph.setdefault(end, []).append(start)
+            self.__graph[end].sort()
 
-    def breadth_bypass(self):
-        print(self.__node)
-        mas = self.__graph.get(self.__node)
-        while len(mas) != 0:
-            print(*mas)
-            buf = mas[::-1]
-            mas = []
-            while len(buf) != 0:
-                mas += self.__graph.get(buf.pop(), '')
+    def breadth_bypass(self, stack=list(), visited=set()) -> None:
+        massive = []
+        stack.reverse()
+        if len(stack) == 0:
+            return
+        while len(stack) != 0:
+            curr_node = stack.pop()
+            if curr_node in visited:
+                continue
+            print(curr_node)
+            visited.add(curr_node)
+            massive += self.__graph.get(curr_node, '')
+        self.breadth_bypass(massive, visited)
 
-    # def depth_bypass(self):
+    def depth_bypass(self, node: str, visited=set()) -> None:
+        print(node)
+        visited.add(node)
+        for i in self.__graph.get(node, ''):
+            if i in visited:
+                continue
+            self.depth_bypass(i, visited)
+
+
+def bypass(graph):
+    if graph.bypass_type == 'd':
+        graph.depth_bypass(graph.vertex)
+    elif graph.bypass_type == 'b':
+        graph.breadth_bypass([graph.vertex])
 
 
 def parse_cmd(cmd):
-    A = None
+    graph = None
     for line in cmd.input():
         if line == '\n':
             continue
-        if A is None:
-            A = Graph(*line[:-1].split())
+        elif graph is None:
+            graph = Graph(*line[:-1].split())
             continue
-        A.add_edge(*line[:-1].split())
-    A.breadth_bypass()
+        graph.add_edge(*line[:-1].split())
+    return graph
 
 
 cmd = fileinput
-parse_cmd(cmd)
+my_graph = parse_cmd(cmd)
+bypass(my_graph)
