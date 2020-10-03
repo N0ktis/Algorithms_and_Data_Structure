@@ -11,31 +11,30 @@ class Graph:
         self.vertex = vertex
         self.bypass_type = bypass_type
 
-    def add_edge(self, start: str, end, ) -> None:
+    def add_edge(self, start: str, end: str) -> None:
         self.__graph.setdefault(start, []).append(end)
-        self.__graph[start].sort()
         if self.__type == 'u':
             self.__graph.setdefault(end, []).append(start)
-            self.__graph[end].sort()
 
-    def breadth_bypass(self, stack=list(), visited=set()) -> None:
-        massive = []
-        stack.reverse()
-        if len(stack) == 0:
+    def breadth_bypass(self, queue=list()) -> None:
+        if len(queue) == 0:
             return
-        while len(stack) != 0:
-            curr_node = stack.pop()
+        visited = set()
+        while len(queue) != 0:
+            curr_node = queue.pop(0)
             if curr_node in visited:
                 continue
             print(curr_node)
             visited.add(curr_node)
-            massive += self.__graph.get(curr_node, '')
-        self.breadth_bypass(massive, visited)
+            nodes_to_add = list(set(self.__graph.get(curr_node, [])) - visited)
+            nodes_to_add.sort()
+            queue += nodes_to_add
 
     def depth_bypass(self, node: str, visited=set()) -> None:
         print(node)
         visited.add(node)
-        for i in self.__graph.get(node, ''):
+        self.__graph.get(node, []).sort()
+        for i in self.__graph.get(node, []):
             if i in visited:
                 continue
             self.depth_bypass(i, visited)
