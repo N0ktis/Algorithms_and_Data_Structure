@@ -1,5 +1,5 @@
-import re
 import fileinput
+import re
 
 
 class Stack:

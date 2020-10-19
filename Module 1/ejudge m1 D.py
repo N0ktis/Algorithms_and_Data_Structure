@@ -1,5 +1,6 @@
 import fileinput
 import sys
+from collections import deque
 
 sys.setrecursionlimit(10000)
 
@@ -16,12 +17,12 @@ class Graph:
         if self.__type == 'u':
             self.__graph.setdefault(end, []).append(start)
 
-    def breadth_bypass(self, queue=list()) -> None:
+    def breadth_bypass(self, queue=deque()) -> None:
         if len(queue) == 0:
             return
         visited = set()
         while len(queue) != 0:
-            curr_node = queue.pop(0)
+            curr_node = queue.popleft()
             if curr_node in visited:
                 continue
             print(curr_node)
@@ -44,7 +45,7 @@ def bypass(graph):
     if graph.bypass_type == 'd':
         graph.depth_bypass(graph.vertex)
     elif graph.bypass_type == 'b':
-        graph.breadth_bypass([graph.vertex])
+        graph.breadth_bypass(deque([graph.vertex]))
 
 
 def parse_cmd(cmd):
