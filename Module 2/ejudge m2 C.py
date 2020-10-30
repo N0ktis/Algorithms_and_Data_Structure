@@ -14,44 +14,42 @@ class MinBinaryHeap:
         self.data = list()
         self.__key_index = dict()
 
-    def __left_ch(self, index):
+    def __left_ch(self, index: int) -> int:
         return 2 * index + 1
 
-    def __right_ch(self, index):
+    def __right_ch(self, index: int) -> int:
         return 2 * index + 2
 
-    def __parent(self, index):
+    def __parent(self, index: int) -> int:
         return int((index - 1) / 2)
 
-    def __heapify(self, index: int, direction_up=True):
-        if index == 0:
+    def __swap(self, first_elem: int, second_elem: int):
+        self.__key_index[self.data[first_elem].key], self.__key_index[
+            self.data[second_elem].key] = second_elem, first_elem
+        self.data[first_elem], self.data[second_elem] = self.data[second_elem], self.data[first_elem]
+
+    def __heapify(self, index: int, root=False, direction_up=True):
+        if index == 0 and not root:
             return
 
         if direction_up:
             parent_index = self.__parent(index)
-            print(self.data[index].key, self.data[parent_index].key, '^^^')
             if self.data[index].key < self.data[parent_index].key:
-                self.__key_index[self.data[index].key], self.__key_index[
-                    self.data[parent_index].key] = parent_index, index
-                self.data[index], self.data[parent_index] = self.data[parent_index], self.data[index]
+                self.__swap(index, parent_index)
                 self.__heapify(parent_index)
         else:
             left_ch_index = self.__left_ch(index)
             right_ch_index = self.__right_ch(index)
+            min_elem_index = index
 
-            if left_ch_index < len(self.data) and self.data[left_ch_index].key < self.data[index].key:
+            if left_ch_index < len(self.data) and self.data[left_ch_index].key < self.data[min_elem_index].key:
                 min_elem_index = left_ch_index
-            elif right_ch_index < len(self.data) and self.data[right_ch_index].key < self.data[index].key:
+            if right_ch_index < len(self.data) and self.data[right_ch_index].key < self.data[min_elem_index].key:
                 min_elem_index = right_ch_index
-            else:
-                min_elem_index = index
 
             if min_elem_index != index:
-                self.__key_index[self.data[index].key], self.__key_index[
-                    self.data[min_elem_index].key] = min_elem_index, index
-                self.data[index], self.data[min_elem_index] = self.data[min_elem_index], self.data[index]
+                self.__swap(index, min_elem_index)
                 self.__heapify(min_elem_index, direction_up=False)
-
 
     def add(self, key: int, value: str):
         new_node = Node(key, value)
@@ -74,17 +72,21 @@ class MinBinaryHeap:
             raise Exception('0')
 
     def delete(self, key: int):
+        root = False
         if key in self.__key_index.keys():
             key_index = self.__key_index[key]
+            if key_index == 0:
+                root = True
         else:
             raise Exception('error')
 
-        self.__key_index[self.data[key_index].key], self.__key_index[len(self.data) - 1] = len(self.data) - 1, key_index
-        self.data[key_index], self.data[len(self.data) - 1] = self.data[len(self.data) - 1], self.data[key_index]
+        self.__swap(key_index, len(self.data) - 1)
+
         self.data.pop()
         self.__key_index.pop(key)
-        self.__heapify(key_index)
-        self.__heapify(key_index, direction_up=False)
+        if key_index < len(self.data):
+            self.__heapify(key_index)
+        self.__heapify(key_index, root=root, direction_up=False)
 
     def min(self) -> tuple:
         if len(self.data) == 0:
@@ -115,7 +117,7 @@ class MinBinaryHeap:
             if queue_elem == '_':
                 answer += '_ '
                 continue
-            elif self.__parent(queue_elem) == 0:
+            elif queue_elem == 0:
                 answer += '[' + str(self.data[queue_elem].key) + ' ' + self.data[queue_elem].value + '] '
             else:
                 answer += '[' + str(self.data[queue_elem].key) + ' ' + self.data[queue_elem].value + ' ' + str(
@@ -190,7 +192,7 @@ def parse_cmd(cmd):
 
             elif line[:6] == 'search':
                 try:
-                    print('1', *bin_heap.search(int(line[7:-1])))
+                    print('1', *bin_heap.search(int(line[7:])))
                 except Exception:
                     print('0')
 
@@ -203,5 +205,6 @@ def parse_cmd(cmd):
                 bin_heap.print(buf)
 
 
-cmd = fileinput
-parse_cmd(cmd)
+if __name__ == '__main__':
+    cmd = fileinput
+    parse_cmd(cmd)
