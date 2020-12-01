@@ -1,4 +1,6 @@
 import numpy as np
+
+
 # 1) Реализовать алгоритм быстрого возведения программно, протестировать его.
 def square(m, n: int):
     '''
@@ -18,14 +20,16 @@ def square(m, n: int):
 
 
 # 2) Написать алгоритм получения N-того числа Фибоначчи за log(n).
-def fibonacci(n: int):
+def fibonacci(n: int) -> int:
     '''
     :param n: порядковый номер необходимог числа Фибоначчи
     :return: число Фибоначчи
     '''
     if not isinstance(n, int):
         return 'ERROR'
-    return np.linalg.matrix_power(np.array([[1,1],[1,0]]),n-1)[0][1]
+    return np.linalg.matrix_power(np.array([[1, 1], [1, 0]]), n - 1)[0][1]
+
+
 #    if n == 1:
 #        return 0
 #    elif n == 2:
@@ -34,10 +38,12 @@ def fibonacci(n: int):
 
 
 # 3) Написать алгоритм генерации подстановок в лексикографическом порядке, оценить его сложность.
-#def permutation(n)
+def permutation(n: int):
+    pass
+
 
 # 5) Написать алгоритм проверки числа на простоту.
-def prime_number(n: int):
+def prime_number(n: int) -> str:
     '''
     :param n: целое число, которое проверяют на простоту
     :return: результат проверки числа n
