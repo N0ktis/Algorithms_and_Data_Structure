@@ -1,7 +1,7 @@
-from functools import reduce
 import fileinput
 import math
 import re
+from functools import reduce
 
 
 class Backpack:
@@ -11,6 +11,17 @@ class Backpack:
         self.total_weight = 0
         self.answer = list()
         self.__gcd = 1
+
+    def __str__(self) -> str:
+        """
+        Перегружаем магический метод str, чтобы при вызове метода print корректно выводить данные
+        :return: строка с ответом
+        """
+        answer = ''
+        answer += str(self.total_weight) + ' ' + str(self.total_value) + '\n'
+        for elem in self.answer:
+            answer += str(elem) + '\n'
+        return answer[:-1]
 
     @staticmethod
     def __find_gcd(weight: list) -> int:
@@ -75,11 +86,6 @@ class Backpack:
             self.total_weight += weight[n - 1] * self.__gcd
             self.answer.append(n)
 
-    def print(self) -> None:
-        print(self.total_weight, self.total_value)
-        for i in range(len(self.answer)):
-            print(self.answer[i])
-
 
 def parse_cmd(cmd):
     backpack = None
@@ -101,7 +107,7 @@ def parse_cmd(cmd):
             else:
                 print('error')
     backpack.knapsack_dp(value, weight)
-    backpack.print()
+    print(backpack)
 
 
 if __name__ == '__main__':
