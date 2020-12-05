@@ -53,7 +53,7 @@ class BK_tree:
         while len(queue) != 0:
             curr_node = queue.popleft()
             if curr_node.word == incorrect_word.lower():
-                return [' ok']
+                return [incorrect_word]
 
             dist = self.__damerau_levenshtein(incorrect_word.lower(), curr_node.word)
             if dist <= k:
@@ -72,7 +72,7 @@ class BK_tree:
                         queue.append(curr_node.children[i])
 
         if len(answer) == 0:
-            return ['?']
+            return []
         else:
             return answer
 
@@ -119,16 +119,19 @@ class BK_tree:
             alph_dict[word1[i - 1]] = i
         return dist_matrix[len_word1 + 1][len_word2 + 1]
 
-    @staticmethod
-    def print(word: str, answer: list) -> None:
-        """
-        Функция печатает переданные параметры в установленном формате
-        :param word: слово, поданное на проверку
-        :param answer: список, полученный после выполнения функции autocorrection
-        :return: None
-        """
-        if answer[0] == ' ok' or answer[0] == '?':
-            print(word, '-' + answer[0])
+
+def print_ans(word: str, answer: list) -> None:
+    """
+    Функция печатает переданные параметры в установленном формате
+    :param word: слово, поданное на проверку
+    :param answer: список, полученный после выполнения функции autocorrection класса BK_tree
+    :return: None
+    """
+    if len(answer) == 0:
+        print(word, '-?')
+    else:
+        if answer[0] == word:
+            print(word, '- ok')
         else:
             answer.sort()
             print(word, '->', ', '.join(answer))
@@ -152,9 +155,8 @@ def parse_cmd(cmd):
                 i += 1
             else:
                 try:
-
                     correction = bk_tree.autocorrection(line[:-1])
-                    bk_tree.print(line[:-1], correction)
+                    print_ans(line[:-1], correction)
                 except Exception as msg:
                     print(msg)
 
