@@ -12,17 +12,6 @@ class Backpack:
         self.answer = list()
         self.__gcd = 1
 
-    def __str__(self) -> str:
-        """
-        Перегружаем магический метод str, чтобы при вызове метода print корректно выводить данные
-        :return: строка с ответом
-        """
-        answer = ''
-        answer += str(self.total_weight) + ' ' + str(self.total_value) + '\n'
-        for elem in self.answer:
-            answer += str(elem) + '\n'
-        return answer[:-1]
-
     @staticmethod
     def __find_gcd(weight: list) -> int:
         """
@@ -107,7 +96,11 @@ def parse_cmd(cmd):
             else:
                 print('error')
     backpack.knapsack_dp(value, weight)
-    print(backpack)
+
+    # БОЛЬШЕ НИКОГДА НЕ БУДУ ВЫНОСИТЬ ВЫВОД В ОТДЕЛЬНУЮ ФУНКЦИЮ
+    print(backpack.total_weight, backpack.total_value)
+    for elem in backpack.answer:
+        print(elem)
 
 
 if __name__ == '__main__':

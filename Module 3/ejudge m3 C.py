@@ -30,6 +30,9 @@ class BK_tree:
 
         dist = self.__damerau_levenshtein(word, vertex.word)
 
+        if dist == 0:  # Условие на случай, если мы захотим добавить в BK-дерево уже существующее слово
+            return
+
         if dist in vertex.children:
             self.insert_word(word, vertex.children[dist])
         else:
@@ -45,7 +48,7 @@ class BK_tree:
         если входное слово написано правильно - возвращает "ok", если не удалось найти похожие слова - возвращает - "?"
         """
         if self.__root is None:
-            raise Exception('error')
+            return []
 
         answer = []
         queue = deque()
